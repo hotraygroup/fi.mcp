@@ -1,0 +1,6 @@
+name: fi.mcp
+host: localhost
+port: 8080
+mcp:
+  name: fi.mcp
+  messageTimeout: 30s # 工具调用的超时时间
