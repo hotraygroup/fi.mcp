@@ -1,0 +1,146 @@
+package logic
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"strconv"
+	"time"
+
+	"fi.mcp/internal/svc"
+	"fi.mcp/internal/types"
+	"github.com/go-resty/resty/v2"
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/mcp"
+)
+
+type KlineItem struct {
+	Timestamp string  `json:"timestamp"`
+	Open      float64 `json:"open"`
+	Close     float64 `json:"close"`
+	High      float64 `json:"high"`
+	Low       float64 `json:"low"`
+	Volume    float64 `json:"volume"`
+	Amount    float64 `json:"amount"`
+}
+
+func newKlineTool(svcCtx *svc.ServiceContext) mcp.Tool {
+
+	var klineTool = mcp.Tool{
+		Name:        "kline",
+		Description: "用股票代码获取对应的K线数据",
+		InputSchema: mcp.InputSchema{
+			Properties: map[string]any{
+				"symbol": map[string]any{
+					"type":        "string",
+					"description": "股票代码",
+				},
+				"period": map[string]any{
+					"type":        "string",
+					"description": "周期",
+					"default":     "day",
+				},
+				"count": map[string]any{
+					"type":        "string",
+					"description": "每次获取数量",
+					"default":     "284",
+				},
+				"days": map[string]any{
+					"type":        "string",
+					"description": "最近多少天",
+					"default":     "360",
+				},
+			},
+			Required: []string{"symbol"},
+		},
+		Handler: func(ctx context.Context, params map[string]any) (any, error) {
+			var req struct {
+				Symbol string `json:"symbol"`
+				Period string `json:"period"`
+				Count  string `json:"count"`
+				Days   string `json:"days"`
+			}
+
+			if err := mcp.ParseArguments(params, &req); err != nil {
+				return nil, fmt.Errorf("failed to parse params: %w", err)
+			}
+			if req.Symbol == "" {
+				return nil, fmt.Errorf("symbol is required")
+			}
+
+			lastDay := "0000-00-00"
+
+			nDays, _ := strconv.Atoi(req.Days)
+			if nDays <= 0 {
+				nDays = 360
+			}
+
+			kline := types.Kline{}
+			var items []*KlineItem
+			now := time.Now()
+			maxTimeStamp := now.UnixMilli()
+
+			client := resty.New()
+			setHeader(svcCtx.Config.DataSource.UserAgent, svcCtx.Config.DataSource.Snowball.IndexURL, client)
+			finished := false
+			for {
+				url := fmt.Sprintf(svcCtx.Config.DataSource.Snowball.KlineURL, req.Symbol, maxTimeStamp, req.Period, req.Count)
+				logx.Infof("url: %s", url)
+				_, err := client.R().SetResult(&kline).Get(url)
+				if err != nil {
+					return nil, err
+				}
+
+				if kline.ErrorCode != 0 {
+					return nil, fmt.Errorf("request error, code: %d", kline.ErrorCode)
+				}
+
+				logx.Infof("data item count: %d", len(kline.Data.Item))
+
+				if len(kline.Data.Item) == 0 {
+					break
+				}
+
+				for i := len(kline.Data.Item) - 1; i >= 0; i-- {
+
+					t := time.Unix(int64(kline.Data.Item[i][0])/1000, 0)
+
+					currentDay := t.Format("2006-01-02")
+					if currentDay != lastDay {
+						lastDay = currentDay
+						nDays -= 1
+						if nDays < 0 {
+							logx.Infof("currentDay: %s, finished", currentDay)
+							finished = true
+							break
+						}
+					}
+
+					item := &KlineItem{
+						Timestamp: t.Format(time.DateTime),
+						Volume:    kline.Data.Item[i][1],
+						Open:      kline.Data.Item[i][2],
+						High:      kline.Data.Item[i][3],
+						Low:       kline.Data.Item[i][4],
+						Close:     kline.Data.Item[i][5],
+						Amount:    kline.Data.Item[i][9],
+					}
+					items = append([]*KlineItem{item}, items...)
+
+					maxTimeStamp = int64(kline.Data.Item[i][0]) - 1
+				}
+
+				if finished {
+					break
+				}
+			}
+
+			buf, _ := json.Marshal(items)
+			return mcp.ToolResult{
+				Type:    mcp.ContentTypeText,
+				Content: string(buf),
+			}, nil
+		},
+	}
+	return klineTool
+}
