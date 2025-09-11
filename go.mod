@@ -2,7 +2,11 @@ module fi.mcp
 
 go 1.25.1
 
-require github.com/zeromicro/go-zero v1.9.0
+require (
+	github.com/go-resty/resty/v2 v2.16.5
+	github.com/zeromicro/go-zero v1.9.0
+	golang.org/x/sync v0.11.0
+)
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect

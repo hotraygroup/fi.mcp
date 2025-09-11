@@ -23,6 +23,11 @@ func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
 	// 注册 mcp tool
 	server.RegisterTool(echoTool)
 
+	server.RegisterTool(newSuggestTool(svcCtx))
+
+	// 其他工具可以在这里注册
+	// server.RegisterTool(anotherTool)
+
 	return &MCP{
 		ctx:       ctx,
 		svcCtx:    svcCtx,

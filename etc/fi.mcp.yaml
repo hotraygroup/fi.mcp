@@ -4,3 +4,19 @@ port: 8080
 mcp:
   name: fi.mcp
   messageTimeout: 30s # 工具调用的超时时间
+
+DataSource:
+  UserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
+  Snowball:
+    IndexURL: "https://xueqiu.com/about"
+    SuggestURL: "https://xueqiu.com/query/v1/suggest_stock.json?q=%s"
+    KlineURL: "https://stock.xueqiu.com/v5/stock/chart/kline.json?symbol=%s&begin=%d&period=%s&type=before&count=-%s&indicator=kline,pe,pb,ps,pcf,market_capital,agt,ggt,balance"
+    IndicatorURL: "https://stock.xueqiu.com/v5/stock/finance/cn/indicator.json?symbol=%s&type=all&is_detail=true&count=%s&timestamp=%d"
+    IncomeURL: "https://stock.xueqiu.com/v5/stock/finance/cn/income.json?symbol=%s&type=all&is_detail=true&count=%s&timestamp=%d"
+    BalanceURL: "https://stock.xueqiu.com/v5/stock/finance/cn/balance.json?symbol=%s&type=all&is_detail=true&count=%s&timestamp=%d"
+    CashFlowURL: "https://stock.xueqiu.com/v5/stock/finance/cn/cash_flow.json?symbol=%s&type=all&is_detail=true&count=%s&timestamp=%d"
+    QuoteURL: "https://stock.xueqiu.com/v5/stock/quote.json?symbol=%s&extend=detail"
+    ListURL: "https://xueqiu.com/service/v5/stock/screener/quote/list?page=%d&size=1000&order=desc&orderby=percent&order_by=percent&market=CN&type=sh_sz&_=%d"
+
+    Symbol:
+      SH: "SH000001"
