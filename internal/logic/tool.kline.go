@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
@@ -22,6 +21,16 @@ type KlineItem struct {
 	Low       float64 `json:"low"`
 	Volume    float64 `json:"volume"`
 	Amount    float64 `json:"amount"`
+}
+
+var klineDescription = map[string]string{
+	"timestamp": "时间",
+	"open":      "开盘价",
+	"close":     "收盘价",
+	"high":      "最高价",
+	"low":       "最低价",
+	"volume":    "成交量",
+	"amount":    "成交额",
 }
 
 func newKlineTool(svcCtx *svc.ServiceContext) mcp.Tool {
@@ -135,10 +144,9 @@ func newKlineTool(svcCtx *svc.ServiceContext) mcp.Tool {
 				}
 			}
 
-			buf, _ := json.Marshal(items)
-			return mcp.ToolResult{
-				Type:    mcp.ContentTypeText,
-				Content: string(buf),
+			return map[string]any{
+				"columns": klineDescription,
+				"items":   items,
 			}, nil
 		},
 	}
