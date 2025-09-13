@@ -59,7 +59,7 @@ func newIndicatorTool(svcCtx *svc.ServiceContext) mcp.Tool {
 
 	var indicatorTool = mcp.Tool{
 		Name:        "indicator",
-		Description: "获取主要财务指标",
+		Description: "获取公司主要财务指标",
 		InputSchema: mcp.InputSchema{
 			Properties: map[string]any{
 				"symbol": map[string]any{

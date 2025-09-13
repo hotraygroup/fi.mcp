@@ -21,12 +21,12 @@ func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
 	server := mcp.NewMcpServer(svcCtx.Config.McpConf)
 
 	// 注册 mcp tool
-	server.RegisterTool(echoTool)
-
 	server.RegisterTool(newSuggestTool(svcCtx))
 	server.RegisterTool(newKlineTool(svcCtx))
 	server.RegisterTool(newIndicatorTool(svcCtx))
 	server.RegisterTool(newIncomeTool(svcCtx))
+	server.RegisterTool(newBalanceTool(svcCtx))
+	server.RegisterTool(newCashFlowTool(svcCtx))
 
 	return &MCP{
 		ctx:       ctx,
