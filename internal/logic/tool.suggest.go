@@ -5,14 +5,12 @@ import (
 	"fmt"
 	"net/url"
 
-	"fi.mcp/internal/svc"
 	"fi.mcp/internal/types"
 	"github.com/go-resty/resty/v2"
-	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/mcp"
 )
 
-func newSuggestTool(svcCtx *svc.ServiceContext) mcp.Tool {
+func newSuggestTool(_mcp *MCP) mcp.Tool {
 	var suggestTool = mcp.Tool{
 		Name:        "suggest",
 		Description: "由公司名称或简称获取股票代码",
@@ -36,19 +34,19 @@ func newSuggestTool(svcCtx *svc.ServiceContext) mcp.Tool {
 
 			suggest := types.Suggest{}
 
-			url := fmt.Sprintf(svcCtx.Config.DataSource.Snowball.SuggestURL, url.QueryEscape(req.Company))
+			url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.SuggestURL, url.QueryEscape(req.Company))
 
 			client := resty.New()
-			setHeader(svcCtx.Config.DataSource.UserAgent, svcCtx.Config.DataSource.Snowball.IndexURL, client)
+			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, client)
 
 			resp, err := client.R().SetResult(&suggest).Get(url)
-			logx.Infof("url: %s, body: %s", url, resp.String())
+			_mcp.Infof("url: %s, body: %s", url, resp.String())
 
 			if err != nil {
 				return nil, fmt.Errorf("request error: %w", err)
 			}
 
-			logx.Infof("suggest: %+v", suggest)
+			_mcp.Infof("suggest: %+v", suggest)
 
 			symbol := ""
 

@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"fi.mcp/internal/svc"
 	"fi.mcp/internal/types"
 	"github.com/go-resty/resty/v2"
-	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/mcp"
 )
 
@@ -107,7 +105,7 @@ var balanceDescription = map[string]string{
 	"growth_rate":                   "增长率",
 }
 
-func newBalanceTool(svcCtx *svc.ServiceContext) mcp.Tool {
+func newBalanceTool(_mcp *MCP) mcp.Tool {
 
 	var balanceTool = mcp.Tool{
 		Name:        "balance",
@@ -139,11 +137,11 @@ func newBalanceTool(svcCtx *svc.ServiceContext) mcp.Tool {
 			balance := types.Balance{}
 			var items []map[string]interface{}
 
-			url := fmt.Sprintf(svcCtx.Config.DataSource.Snowball.BalanceURL, req.Symbol, req.Count, time.Now().UnixMilli())
-			logx.Infof("url: %s", url)
+			url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.BalanceURL, req.Symbol, req.Count, time.Now().UnixMilli())
+			_mcp.Infof("url: %s", url)
 
 			client := resty.New()
-			setHeader(svcCtx.Config.DataSource.UserAgent, svcCtx.Config.DataSource.Snowball.IndexURL, client)
+			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, client)
 			_, err := client.R().SetResult(&balance).Get(url)
 
 			if err != nil {
@@ -178,13 +176,13 @@ func newBalanceTool(svcCtx *svc.ServiceContext) mcp.Tool {
 							new[k] = v[0]
 						}
 					default:
-						logx.Infof("unknown type: %T, value: %v", v, v)
+						_mcp.Infof("unknown type: %T, value: %v", v, v)
 					}
 				}
 				items = append(items, new)
 			}
 
-			logx.Infof("data item count: %d", len(balance.Data.List))
+			_mcp.Infof("data item count: %d", len(balance.Data.List))
 			return map[string]any{
 				"columns": balanceDescription,
 				"items":   items,

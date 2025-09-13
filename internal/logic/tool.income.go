@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"fi.mcp/internal/svc"
 	"fi.mcp/internal/types"
 	"github.com/go-resty/resty/v2"
-	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/mcp"
 )
 
@@ -60,7 +58,7 @@ var incomeDescription = map[string]string{
 	"growth_rate":                    "增长率",
 }
 
-func newIncomeTool(svcCtx *svc.ServiceContext) mcp.Tool {
+func newIncomeTool(_mcp *MCP) mcp.Tool {
 
 	var incomeTool = mcp.Tool{
 		Name:        "income",
@@ -92,11 +90,11 @@ func newIncomeTool(svcCtx *svc.ServiceContext) mcp.Tool {
 			income := types.Income{}
 			var items []map[string]interface{}
 
-			url := fmt.Sprintf(svcCtx.Config.DataSource.Snowball.IncomeURL, req.Symbol, req.Count, time.Now().UnixMilli())
-			logx.Infof("url: %s", url)
+			url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.IncomeURL, req.Symbol, req.Count, time.Now().UnixMilli())
+			_mcp.Infof("url: %s", url)
 
 			client := resty.New()
-			setHeader(svcCtx.Config.DataSource.UserAgent, svcCtx.Config.DataSource.Snowball.IndexURL, client)
+			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, client)
 			_, err := client.R().SetResult(&income).Get(url)
 
 			if err != nil {
@@ -131,13 +129,13 @@ func newIncomeTool(svcCtx *svc.ServiceContext) mcp.Tool {
 							new[k] = v[0]
 						}
 					default:
-						logx.Infof("unknown type: %T, value: %v", v, v)
+						_mcp.Infof("unknown type: %T, value: %v", v, v)
 					}
 				}
 				items = append(items, new)
 			}
 
-			logx.Infof("data item count: %d", len(income.Data.List))
+			_mcp.Infof("data item count: %d", len(income.Data.List))
 			return map[string]any{
 				"columns": incomeDescription,
 				"items":   items,

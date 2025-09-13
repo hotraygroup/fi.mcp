@@ -20,20 +20,22 @@ func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
 	// 创建 MCP 服务器
 	server := mcp.NewMcpServer(svcCtx.Config.McpConf)
 
-	// 注册 mcp tool
-	server.RegisterTool(newSuggestTool(svcCtx))
-	server.RegisterTool(newKlineTool(svcCtx))
-	server.RegisterTool(newIndicatorTool(svcCtx))
-	server.RegisterTool(newIncomeTool(svcCtx))
-	server.RegisterTool(newBalanceTool(svcCtx))
-	server.RegisterTool(newCashFlowTool(svcCtx))
-
-	return &MCP{
+	_mcp := &MCP{
 		ctx:       ctx,
 		svcCtx:    svcCtx,
 		Logger:    logx.WithContext(ctx),
 		mcpServer: server,
 	}
+
+	// 注册 mcp tool
+	server.RegisterTool(newSuggestTool(_mcp))
+	server.RegisterTool(newKlineTool(_mcp))
+	server.RegisterTool(newIndicatorTool(_mcp))
+	server.RegisterTool(newIncomeTool(_mcp))
+	server.RegisterTool(newBalanceTool(_mcp))
+	server.RegisterTool(newCashFlowTool(_mcp))
+
+	return _mcp
 }
 
 func (l *MCP) Start() {

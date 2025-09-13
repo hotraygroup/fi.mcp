@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"fi.mcp/internal/svc"
 	"fi.mcp/internal/types"
 	"github.com/go-resty/resty/v2"
-	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/mcp"
 )
 
@@ -55,7 +53,7 @@ var indicatorDescription = map[string]string{
 	"growth_rate":                    "增长率",
 }
 
-func newIndicatorTool(svcCtx *svc.ServiceContext) mcp.Tool {
+func newIndicatorTool(_mcp *MCP) mcp.Tool {
 
 	var indicatorTool = mcp.Tool{
 		Name:        "indicator",
@@ -87,11 +85,11 @@ func newIndicatorTool(svcCtx *svc.ServiceContext) mcp.Tool {
 			indicator := types.Indicator{}
 			var items []map[string]interface{}
 
-			url := fmt.Sprintf(svcCtx.Config.DataSource.Snowball.IndicatorURL, req.Symbol, req.Count, time.Now().UnixMilli())
-			logx.Infof("url: %s", url)
+			url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.IndicatorURL, req.Symbol, req.Count, time.Now().UnixMilli())
+			_mcp.Infof("url: %s", url)
 
 			client := resty.New()
-			setHeader(svcCtx.Config.DataSource.UserAgent, svcCtx.Config.DataSource.Snowball.IndexURL, client)
+			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, client)
 			_, err := client.R().SetResult(&indicator).Get(url)
 
 			if err != nil {
@@ -126,13 +124,13 @@ func newIndicatorTool(svcCtx *svc.ServiceContext) mcp.Tool {
 							new[k] = v[0]
 						}
 					default:
-						logx.Infof("unknown type: %T, value: %v", v, v)
+						_mcp.Infof("unknown type: %T, value: %v", v, v)
 					}
 				}
 				items = append(items, new)
 			}
 
-			logx.Infof("data item count: %d", len(indicator.Data.List))
+			_mcp.Infof("data item count: %d", len(indicator.Data.List))
 			return map[string]any{
 				"columns": indicatorDescription,
 				"items":   items,

@@ -6,10 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"fi.mcp/internal/svc"
 	"fi.mcp/internal/types"
 	"github.com/go-resty/resty/v2"
-	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/mcp"
 )
 
@@ -33,7 +31,7 @@ var klineDescription = map[string]string{
 	"amount":    "成交额",
 }
 
-func newKlineTool(svcCtx *svc.ServiceContext) mcp.Tool {
+func newKlineTool(_mcp *MCP) mcp.Tool {
 
 	var klineTool = mcp.Tool{
 		Name:        "kline",
@@ -90,11 +88,11 @@ func newKlineTool(svcCtx *svc.ServiceContext) mcp.Tool {
 			maxTimeStamp := now.UnixMilli()
 
 			client := resty.New()
-			setHeader(svcCtx.Config.DataSource.UserAgent, svcCtx.Config.DataSource.Snowball.IndexURL, client)
+			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, client)
 			finished := false
 			for {
-				url := fmt.Sprintf(svcCtx.Config.DataSource.Snowball.KlineURL, req.Symbol, maxTimeStamp, req.Period, req.Count)
-				logx.Infof("url: %s", url)
+				url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.KlineURL, req.Symbol, maxTimeStamp, req.Period, req.Count)
+				_mcp.Infof("url: %s", url)
 				_, err := client.R().SetResult(&kline).Get(url)
 				if err != nil {
 					return nil, err
@@ -104,7 +102,7 @@ func newKlineTool(svcCtx *svc.ServiceContext) mcp.Tool {
 					return nil, fmt.Errorf("request error, code: %d", kline.ErrorCode)
 				}
 
-				logx.Infof("data item count: %d", len(kline.Data.Item))
+				_mcp.Infof("data item count: %d", len(kline.Data.Item))
 
 				if len(kline.Data.Item) == 0 {
 					break
@@ -119,7 +117,7 @@ func newKlineTool(svcCtx *svc.ServiceContext) mcp.Tool {
 						lastDay = currentDay
 						nDays -= 1
 						if nDays < 0 {
-							logx.Infof("currentDay: %s, finished", currentDay)
+							_mcp.Infof("currentDay: %s, finished", currentDay)
 							finished = true
 							break
 						}
