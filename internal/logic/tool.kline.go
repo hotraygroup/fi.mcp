@@ -88,7 +88,7 @@ func newKlineTool(_mcp *MCP) mcp.Tool {
 			maxTimeStamp := now.UnixMilli()
 
 			client := resty.New()
-			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, client)
+			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, _mcp.svcCtx.Config.DataSource.Snowball.CookieURL, client)
 			finished := false
 			for {
 				url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.KlineURL, req.Symbol, maxTimeStamp, req.Period, req.Count)

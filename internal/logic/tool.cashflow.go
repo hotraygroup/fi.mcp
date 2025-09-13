@@ -90,7 +90,7 @@ func newCashFlowTool(_mcp *MCP) mcp.Tool {
 			_mcp.Infof("url: %s", url)
 
 			client := resty.New()
-			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, client)
+			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, _mcp.svcCtx.Config.DataSource.Snowball.CookieURL, client)
 			_, err := client.R().SetResult(&cashFlow).Get(url)
 
 			if err != nil {

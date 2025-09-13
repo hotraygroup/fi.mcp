@@ -8,6 +8,7 @@ type Config struct {
 		UserAgent string
 		Snowball  struct {
 			IndexURL     string
+			CookieURL    string
 			SuggestURL   string
 			KlineURL     string
 			IndicatorURL string //ZYCWZB zhuyaocaiwuzhibiao

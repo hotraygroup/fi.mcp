@@ -32,12 +32,12 @@ func (c *Cookie) Expired() bool {
 	return c.cookies == nil || c.stamp.Add(time.Duration(60+rand.Intn(120))*time.Second).Before(time.Now())
 }
 
-func setHeader(userAgent, indexURL string, _client *resty.Client) {
+func setHeader(userAgent, indexURL, cookieURL string, _client *resty.Client) {
 
 	if globalCookie.Expired() {
 		_, err, _ := globalSF.Do("getCookie", func() (interface{}, error) {
 			req := resty.New().R()
-			resp, err := req.SetHeader("User-Agent", userAgent).Get(indexURL)
+			resp, err := req.SetHeader("User-Agent", userAgent).Get(cookieURL)
 			if err != nil {
 				return nil, err
 			} else {

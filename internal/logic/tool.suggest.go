@@ -37,7 +37,7 @@ func newSuggestTool(_mcp *MCP) mcp.Tool {
 			url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.SuggestURL, url.QueryEscape(req.Company))
 
 			client := resty.New()
-			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, client)
+			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, _mcp.svcCtx.Config.DataSource.Snowball.CookieURL, client)
 
 			resp, err := client.R().SetResult(&suggest).Get(url)
 			_mcp.Infof("url: %s, body: %s", url, resp.String())
