@@ -75,11 +75,15 @@ func newIndicatorTool(_mcp *MCP) mcp.Tool {
 		Handler: func(ctx context.Context, params map[string]any) (any, error) {
 			var req struct {
 				Symbol string `json:"symbol"`
-				Count  string `json:"count"`
+				Count  string `json:"count,omitempty"`
 			}
 
 			if err := mcp.ParseArguments(params, &req); err != nil {
 				return nil, fmt.Errorf("failed to parse params: %w", err)
+			}
+
+			if req.Count == "" {
+				req.Count = "6"
 			}
 
 			indicator := types.Indicator{}

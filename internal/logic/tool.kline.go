@@ -63,9 +63,9 @@ func newKlineTool(_mcp *MCP) mcp.Tool {
 		Handler: func(ctx context.Context, params map[string]any) (any, error) {
 			var req struct {
 				Symbol string `json:"symbol"`
-				Period string `json:"period"`
-				Count  string `json:"count"`
-				Days   string `json:"days"`
+				Period string `json:"period,omitempty"`
+				Count  string `json:"count,omitempty"`
+				Days   string `json:"days,omitempty"`
 			}
 
 			if err := mcp.ParseArguments(params, &req); err != nil {
@@ -73,6 +73,18 @@ func newKlineTool(_mcp *MCP) mcp.Tool {
 			}
 			if req.Symbol == "" {
 				return nil, fmt.Errorf("symbol is required")
+			}
+
+			if req.Period == "" {
+				req.Period = "day"
+			}
+
+			if req.Count == "" {
+				req.Count = "284"
+			}
+
+			if req.Days == "" {
+				req.Days = "360"
 			}
 
 			lastDay := "0000-00-00"
