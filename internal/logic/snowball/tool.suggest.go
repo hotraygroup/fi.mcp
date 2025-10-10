@@ -1,4 +1,4 @@
-package logic
+package snowball
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/zeromicro/go-zero/mcp"
 )
 
-func newSuggestTool(_mcp *MCP) mcp.Tool {
+func NewSuggestTool(_mcp types.MCPProvider) mcp.Tool {
 	var suggestTool = mcp.Tool{
 		Name:        "suggest",
 		Description: "由公司名称或简称获取股票代码",
@@ -34,19 +34,19 @@ func newSuggestTool(_mcp *MCP) mcp.Tool {
 
 			suggest := types.Suggest{}
 
-			url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.SuggestURL, url.QueryEscape(req.Company))
+			url := fmt.Sprintf(_mcp.GetServiceContext().Config.DataSource.Snowball.SuggestURL, url.QueryEscape(req.Company))
 
 			client := resty.New()
-			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, _mcp.svcCtx.Config.DataSource.Snowball.CookieURL, client)
+			setHeader(_mcp.GetServiceContext().Config.DataSource.UserAgent, _mcp.GetServiceContext().Config.DataSource.Snowball.IndexURL, _mcp.GetServiceContext().Config.DataSource.Snowball.CookieURL, client)
 
 			resp, err := client.R().SetResult(&suggest).Get(url)
-			_mcp.Infof("url: %s, body: %s", url, resp.String())
+			_mcp.GetLogger().Infof("url: %s, body: %s", url, resp.String())
 
 			if err != nil {
 				return nil, fmt.Errorf("request error: %w", err)
 			}
 
-			_mcp.Infof("suggest: %+v", suggest)
+			_mcp.GetLogger().Infof("suggest: %+v", suggest)
 
 			symbol := ""
 

@@ -21,3 +21,6 @@ DataSource:
 
     Symbol:
       SH: "SH000001"
+  OKX:
+    Host: "https://www.okx.com"
+    Candles: "/api/v5/market/candles?instId=%s&bar=%s&limit=300&after=%v"

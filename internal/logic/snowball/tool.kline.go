@@ -1,4 +1,4 @@
-package logic
+package snowball
 
 import (
 	"context"
@@ -31,7 +31,7 @@ var klineDescription = map[string]string{
 	"amount":    "成交额",
 }
 
-func newKlineTool(_mcp *MCP) mcp.Tool {
+func NewKlineTool(_mcp types.MCPProvider) mcp.Tool {
 
 	var klineTool = mcp.Tool{
 		Name:        "kline",
@@ -100,11 +100,11 @@ func newKlineTool(_mcp *MCP) mcp.Tool {
 			maxTimeStamp := now.UnixMilli()
 
 			client := resty.New()
-			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, _mcp.svcCtx.Config.DataSource.Snowball.CookieURL, client)
+			setHeader(_mcp.GetServiceContext().Config.DataSource.UserAgent, _mcp.GetServiceContext().Config.DataSource.Snowball.IndexURL, _mcp.GetServiceContext().Config.DataSource.Snowball.CookieURL, client)
 			finished := false
 			for {
-				url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.KlineURL, req.Symbol, maxTimeStamp, req.Period, req.Count)
-				_mcp.Infof("url: %s", url)
+				url := fmt.Sprintf(_mcp.GetServiceContext().Config.DataSource.Snowball.KlineURL, req.Symbol, maxTimeStamp, req.Period, req.Count)
+				_mcp.GetLogger().Infof("url: %s", url)
 				_, err := client.R().SetResult(&kline).Get(url)
 				if err != nil {
 					return nil, err
@@ -114,7 +114,7 @@ func newKlineTool(_mcp *MCP) mcp.Tool {
 					return nil, fmt.Errorf("request error, code: %d", kline.ErrorCode)
 				}
 
-				_mcp.Infof("data item count: %d", len(kline.Data.Item))
+				_mcp.GetLogger().Infof("data item count: %d", len(kline.Data.Item))
 
 				if len(kline.Data.Item) == 0 {
 					break
@@ -129,7 +129,7 @@ func newKlineTool(_mcp *MCP) mcp.Tool {
 						lastDay = currentDay
 						nDays -= 1
 						if nDays < 0 {
-							_mcp.Infof("currentDay: %s, finished", currentDay)
+							_mcp.GetLogger().Infof("currentDay: %s, finished", currentDay)
 							finished = true
 							break
 						}

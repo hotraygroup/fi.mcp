@@ -21,5 +21,9 @@ type Config struct {
 				SH string
 			}
 		}
+		OKX struct {
+			Host    string
+			Candles string
+		}
 	}
 }

@@ -1,4 +1,4 @@
-package logic
+package snowball
 
 import (
 	"context"
@@ -58,7 +58,7 @@ var incomeDescription = map[string]string{
 	"growth_rate":                    "增长率",
 }
 
-func newIncomeTool(_mcp *MCP) mcp.Tool {
+func NewIncomeTool(_mcp types.MCPProvider) mcp.Tool {
 
 	var incomeTool = mcp.Tool{
 		Name:        "income",
@@ -94,11 +94,11 @@ func newIncomeTool(_mcp *MCP) mcp.Tool {
 			income := types.Income{}
 			var items []map[string]interface{}
 
-			url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.IncomeURL, req.Symbol, req.Count, time.Now().UnixMilli())
-			_mcp.Infof("url: %s", url)
+			url := fmt.Sprintf(_mcp.GetServiceContext().Config.DataSource.Snowball.IncomeURL, req.Symbol, req.Count, time.Now().UnixMilli())
+			_mcp.GetLogger().Infof("url: %s", url)
 
 			client := resty.New()
-			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, _mcp.svcCtx.Config.DataSource.Snowball.CookieURL, client)
+			setHeader(_mcp.GetServiceContext().Config.DataSource.UserAgent, _mcp.GetServiceContext().Config.DataSource.Snowball.IndexURL, _mcp.GetServiceContext().Config.DataSource.Snowball.CookieURL, client)
 			_, err := client.R().SetResult(&income).Get(url)
 
 			if err != nil {
@@ -133,13 +133,13 @@ func newIncomeTool(_mcp *MCP) mcp.Tool {
 							new[k] = v[0]
 						}
 					default:
-						_mcp.Infof("unknown type: %T, value: %v", v, v)
+						_mcp.GetLogger().Infof("unknown type: %T, value: %v", v, v)
 					}
 				}
 				items = append(items, new)
 			}
 
-			_mcp.Infof("data item count: %d", len(income.Data.List))
+			_mcp.GetLogger().Infof("data item count: %d", len(income.Data.List))
 			return map[string]any{
 				"columns": incomeDescription,
 				"items":   items,

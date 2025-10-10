@@ -1,4 +1,4 @@
-package logic
+package snowball
 
 import (
 	"context"
@@ -54,7 +54,7 @@ var cashFlowDescription = map[string]string{
 	"net_cash_amt_from_branch":       "取得子公司及其他营业单位支付的现金净额",
 }
 
-func newCashFlowTool(_mcp *MCP) mcp.Tool {
+func NewCashFlowTool(_mcp types.MCPProvider) mcp.Tool {
 
 	var cashFlowTool = mcp.Tool{
 		Name:        "cashflow",
@@ -90,11 +90,11 @@ func newCashFlowTool(_mcp *MCP) mcp.Tool {
 			cashFlow := types.CashFlow{}
 			var items []map[string]interface{}
 
-			url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.CashFlowURL, req.Symbol, req.Count, time.Now().UnixMilli())
-			_mcp.Infof("url: %s", url)
+			url := fmt.Sprintf(_mcp.GetServiceContext().Config.DataSource.Snowball.CashFlowURL, req.Symbol, req.Count, time.Now().UnixMilli())
+			_mcp.GetLogger().Infof("url: %s", url)
 
 			client := resty.New()
-			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, _mcp.svcCtx.Config.DataSource.Snowball.CookieURL, client)
+			setHeader(_mcp.GetServiceContext().Config.DataSource.UserAgent, _mcp.GetServiceContext().Config.DataSource.Snowball.IndexURL, _mcp.GetServiceContext().Config.DataSource.Snowball.CookieURL, client)
 			_, err := client.R().SetResult(&cashFlow).Get(url)
 
 			if err != nil {
@@ -129,13 +129,13 @@ func newCashFlowTool(_mcp *MCP) mcp.Tool {
 							new[k] = v[0]
 						}
 					default:
-						_mcp.Infof("unknown type: %T, value: %v", v, v)
+						_mcp.GetLogger().Infof("unknown type: %T, value: %v", v, v)
 					}
 				}
 				items = append(items, new)
 			}
 
-			_mcp.Infof("data item count: %d", len(cashFlow.Data.List))
+			_mcp.GetLogger().Infof("data item count: %d", len(cashFlow.Data.List))
 			return map[string]any{
 				"columns": cashFlowDescription,
 				"items":   items,

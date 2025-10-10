@@ -1,4 +1,4 @@
-package logic
+package snowball
 
 import (
 	"context"
@@ -53,7 +53,7 @@ var indicatorDescription = map[string]string{
 	"growth_rate":                    "增长率",
 }
 
-func newIndicatorTool(_mcp *MCP) mcp.Tool {
+func NewIndicatorTool(_mcp types.MCPProvider) mcp.Tool {
 
 	var indicatorTool = mcp.Tool{
 		Name:        "indicator",
@@ -89,11 +89,11 @@ func newIndicatorTool(_mcp *MCP) mcp.Tool {
 			indicator := types.Indicator{}
 			var items []map[string]interface{}
 
-			url := fmt.Sprintf(_mcp.svcCtx.Config.DataSource.Snowball.IndicatorURL, req.Symbol, req.Count, time.Now().UnixMilli())
-			_mcp.Infof("url: %s", url)
+			url := fmt.Sprintf(_mcp.GetServiceContext().Config.DataSource.Snowball.IndicatorURL, req.Symbol, req.Count, time.Now().UnixMilli())
+			_mcp.GetLogger().Infof("url: %s", url)
 
 			client := resty.New()
-			setHeader(_mcp.svcCtx.Config.DataSource.UserAgent, _mcp.svcCtx.Config.DataSource.Snowball.IndexURL, _mcp.svcCtx.Config.DataSource.Snowball.CookieURL, client)
+			setHeader(_mcp.GetServiceContext().Config.DataSource.UserAgent, _mcp.GetServiceContext().Config.DataSource.Snowball.IndexURL, _mcp.GetServiceContext().Config.DataSource.Snowball.CookieURL, client)
 			_, err := client.R().SetResult(&indicator).Get(url)
 
 			if err != nil {
@@ -128,13 +128,13 @@ func newIndicatorTool(_mcp *MCP) mcp.Tool {
 							new[k] = v[0]
 						}
 					default:
-						_mcp.Infof("unknown type: %T, value: %v", v, v)
+						_mcp.GetLogger().Infof("unknown type: %T, value: %v", v, v)
 					}
 				}
 				items = append(items, new)
 			}
 
-			_mcp.Infof("data item count: %d", len(indicator.Data.List))
+			_mcp.GetLogger().Infof("data item count: %d", len(indicator.Data.List))
 			return map[string]any{
 				"columns": indicatorDescription,
 				"items":   items,

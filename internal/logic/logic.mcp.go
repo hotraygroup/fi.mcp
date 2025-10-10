@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"fi.mcp/internal/logic/snowball"
 	"fi.mcp/internal/svc"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/mcp"
@@ -13,6 +14,19 @@ type MCP struct {
 	svcCtx *svc.ServiceContext
 	logx.Logger
 	mcpServer mcp.McpServer
+}
+
+// 确保 MCP 实现了 MCPProvider 接口
+func (m *MCP) GetContext() context.Context {
+	return m.ctx
+}
+
+func (m *MCP) GetServiceContext() *svc.ServiceContext {
+	return m.svcCtx
+}
+
+func (m *MCP) GetLogger() logx.Logger {
+	return m.Logger
 }
 
 func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
@@ -28,12 +42,12 @@ func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
 	}
 
 	// 注册 mcp tool
-	server.RegisterTool(newSuggestTool(_mcp))
-	server.RegisterTool(newKlineTool(_mcp))
-	server.RegisterTool(newIndicatorTool(_mcp))
-	server.RegisterTool(newIncomeTool(_mcp))
-	server.RegisterTool(newBalanceTool(_mcp))
-	server.RegisterTool(newCashFlowTool(_mcp))
+	server.RegisterTool(snowball.NewSuggestTool(_mcp))
+	server.RegisterTool(snowball.NewKlineTool(_mcp))
+	server.RegisterTool(snowball.NewIndicatorTool(_mcp))
+	server.RegisterTool(snowball.NewIncomeTool(_mcp))
+	server.RegisterTool(snowball.NewBalanceTool(_mcp))
+	server.RegisterTool(snowball.NewCashFlowTool(_mcp))
 
 	return _mcp
 }

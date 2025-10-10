@@ -1,4 +1,4 @@
-package logic
+package snowball
 
 import (
 	"math/rand"
