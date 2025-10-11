@@ -62,6 +62,11 @@ func NewCandlesTool(_mcp types.MCPProvider) mcp.Tool {
 					"type":        "string",
 					"description": "周期, 如 1m,3m,5m,15m,30m,1H,2H,4H,6H,12H,1D,1W,1M,3M",
 					"default":     "1D",
+					"enum": []string{
+						"1m", "3m", "5m", "15m", "30m",
+						"1H", "2H", "4H", "6H", "12H",
+						"1D", "1W", "1M", "3M",
+					},
 				},
 				"count": map[string]any{
 					"type":        "string",
