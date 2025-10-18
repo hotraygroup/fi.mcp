@@ -27,7 +27,7 @@ type historyItem struct {
 }
 
 func NewStockZhAHistTool(_mcp types.MCPProvider) mcp.Tool {
-	var stockZhAHistTool = mcp.Tool{
+	var tool = mcp.Tool{
 		Name:        "stock_zh_a_hist",
 		Description: "东方财富-沪深京 A 股日频率数据; 历史数据按日频率更新, 当日收盘价请在收盘后获取",
 		InputSchema: mcp.InputSchema{
@@ -100,5 +100,5 @@ func NewStockZhAHistTool(_mcp types.MCPProvider) mcp.Tool {
 			}, nil
 		},
 	}
-	return stockZhAHistTool
+	return tool
 }

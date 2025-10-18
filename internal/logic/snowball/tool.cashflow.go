@@ -56,7 +56,7 @@ var cashFlowDescription = map[string]string{
 
 func NewCashFlowTool(_mcp types.MCPProvider) mcp.Tool {
 
-	var cashFlowTool = mcp.Tool{
+	var tool = mcp.Tool{
 		Name:        "cashflow",
 		Description: "获取公司现金流量表",
 		InputSchema: mcp.InputSchema{
@@ -143,5 +143,5 @@ func NewCashFlowTool(_mcp types.MCPProvider) mcp.Tool {
 
 		},
 	}
-	return cashFlowTool
+	return tool
 }

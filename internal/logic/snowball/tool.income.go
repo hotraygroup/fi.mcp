@@ -60,7 +60,7 @@ var incomeDescription = map[string]string{
 
 func NewIncomeTool(_mcp types.MCPProvider) mcp.Tool {
 
-	var incomeTool = mcp.Tool{
+	var tool = mcp.Tool{
 		Name:        "income",
 		Description: "获取公司利润表",
 		InputSchema: mcp.InputSchema{
@@ -147,5 +147,5 @@ func NewIncomeTool(_mcp types.MCPProvider) mcp.Tool {
 
 		},
 	}
-	return incomeTool
+	return tool
 }

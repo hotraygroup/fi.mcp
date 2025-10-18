@@ -33,7 +33,7 @@ var klineDescription = map[string]string{
 
 func NewKlineTool(_mcp types.MCPProvider) mcp.Tool {
 
-	var klineTool = mcp.Tool{
+	var tool = mcp.Tool{
 		Name:        "kline",
 		Description: "用股票代码获取对应的K线数据",
 		InputSchema: mcp.InputSchema{
@@ -160,5 +160,5 @@ func NewKlineTool(_mcp types.MCPProvider) mcp.Tool {
 			}, nil
 		},
 	}
-	return klineTool
+	return tool
 }

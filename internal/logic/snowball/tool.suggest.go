@@ -11,7 +11,7 @@ import (
 )
 
 func NewSuggestTool(_mcp types.MCPProvider) mcp.Tool {
-	var suggestTool = mcp.Tool{
+	var tool = mcp.Tool{
 		Name:        "suggest",
 		Description: "由公司名称或简称获取股票代码",
 		InputSchema: mcp.InputSchema{
@@ -62,5 +62,5 @@ func NewSuggestTool(_mcp types.MCPProvider) mcp.Tool {
 			}, nil
 		},
 	}
-	return suggestTool
+	return tool
 }

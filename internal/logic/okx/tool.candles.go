@@ -49,7 +49,7 @@ var candlesItemDescription = map[string]string{
 	"3M":  "3M",
 */
 func NewCandlesTool(_mcp types.MCPProvider) mcp.Tool {
-	var candlesTool = mcp.Tool{
+	var tool = mcp.Tool{
 		Name:        "candles",
 		Description: "用交易对获取加密货币的K线数据",
 		InputSchema: mcp.InputSchema{
@@ -192,5 +192,5 @@ func NewCandlesTool(_mcp types.MCPProvider) mcp.Tool {
 			}, nil
 		},
 	}
-	return candlesTool
+	return tool
 }

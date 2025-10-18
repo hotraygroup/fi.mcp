@@ -107,7 +107,7 @@ var balanceDescription = map[string]string{
 
 func NewBalanceTool(_mcp types.MCPProvider) mcp.Tool {
 
-	var balanceTool = mcp.Tool{
+	var tool = mcp.Tool{
 		Name:        "balance",
 		Description: "获取公司资产负债表",
 		InputSchema: mcp.InputSchema{
@@ -194,5 +194,5 @@ func NewBalanceTool(_mcp types.MCPProvider) mcp.Tool {
 
 		},
 	}
-	return balanceTool
+	return tool
 }

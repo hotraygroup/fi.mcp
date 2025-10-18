@@ -43,7 +43,7 @@ func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
 		mcpServer: server,
 	}
 
-	// 注册 mcp tool
+	// 注册 snowball tool
 	server.RegisterTool(snowball.NewSuggestTool(_mcp))
 	server.RegisterTool(snowball.NewKlineTool(_mcp))
 	server.RegisterTool(snowball.NewIndicatorTool(_mcp))
@@ -56,6 +56,14 @@ func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
 
 	// 注册 akshare tool
 	server.RegisterTool(akshare.NewStockZhAHistTool(_mcp))
+	server.RegisterTool(akshare.NewStockCyqEmTool(_mcp))
+	server.RegisterTool(akshare.NewStockIndividualFundFlowTool(_mcp))
+	server.RegisterTool(akshare.NewStockFundFlowIndividualTool(_mcp))
+	server.RegisterTool(akshare.NewStockFundFlowBigDealTool(_mcp))
+
+	server.RegisterTool(akshare.NewStockFinancialDebtThsTool(_mcp))
+	server.RegisterTool(akshare.NewStockFinancialBenefitThsTool(_mcp))
+	server.RegisterTool(akshare.NewStockFinancialCashThsTool(_mcp))
 
 	return _mcp
 }

@@ -1,0 +1,10 @@
+stock_zh_a_hist (ok)
+stock_cyq_em (ok)
+
+stock_individual_fund_flow (ok)
+stock_fund_flow_individual (ok)
+stock_fund_flow_big_deal (ok)
+
+stock_financial_debt_ths (ok)
+stock_financial_benefit_ths (ok)
+stock_financial_cash_ths (ok)

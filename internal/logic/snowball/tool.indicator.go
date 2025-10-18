@@ -55,7 +55,7 @@ var indicatorDescription = map[string]string{
 
 func NewIndicatorTool(_mcp types.MCPProvider) mcp.Tool {
 
-	var indicatorTool = mcp.Tool{
+	var tool = mcp.Tool{
 		Name:        "indicator",
 		Description: "获取公司主要财务指标",
 		InputSchema: mcp.InputSchema{
@@ -142,5 +142,5 @@ func NewIndicatorTool(_mcp types.MCPProvider) mcp.Tool {
 
 		},
 	}
-	return indicatorTool
+	return tool
 }
