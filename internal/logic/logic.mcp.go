@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 
+	"fi.mcp/internal/logic/akshare"
 	"fi.mcp/internal/logic/okx"
 	"fi.mcp/internal/logic/snowball"
 	"fi.mcp/internal/svc"
@@ -50,7 +51,11 @@ func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
 	server.RegisterTool(snowball.NewBalanceTool(_mcp))
 	server.RegisterTool(snowball.NewCashFlowTool(_mcp))
 
+	// 注册 okx tool
 	server.RegisterTool(okx.NewCandlesTool(_mcp))
+
+	// 注册 akshare tool
+	server.RegisterTool(akshare.NewStockZhAHistTool(_mcp))
 
 	return _mcp
 }

@@ -25,5 +25,8 @@ type Config struct {
 			Host    string
 			Candles string
 		}
+		Akshare struct {
+			Host string
+		}
 	}
 }

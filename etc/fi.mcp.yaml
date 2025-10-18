@@ -24,3 +24,5 @@ DataSource:
   OKX:
     Host: "https://www.okx.com"
     Candles: "/api/v5/market/candles?instId=%s&bar=%s&limit=%v&after=%v"
+  Akshare:
+    Host: "http://127.0.0.1:18083"
