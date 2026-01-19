@@ -5,6 +5,10 @@ mcp:
   name: fi.mcp
   messageTimeout: 30s # 工具调用的超时时间
 
+Proxy:
+  Enable: true
+  Socks5: "100.115.184.183:1080"
+
 DataSource:
   UserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"
   Snowball:

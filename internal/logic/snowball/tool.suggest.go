@@ -6,7 +6,6 @@ import (
 	"net/url"
 
 	"fi.mcp/internal/types"
-	"github.com/go-resty/resty/v2"
 	"github.com/zeromicro/go-zero/mcp"
 )
 
@@ -36,8 +35,8 @@ func NewSuggestTool(_mcp types.MCPProvider) mcp.Tool {
 
 			url := fmt.Sprintf(_mcp.GetServiceContext().Config.DataSource.Snowball.SuggestURL, url.QueryEscape(req.Company))
 
-			client := resty.New()
-			setHeader(_mcp.GetServiceContext().Config.DataSource.UserAgent, _mcp.GetServiceContext().Config.DataSource.Snowball.IndexURL, _mcp.GetServiceContext().Config.DataSource.Snowball.CookieURL, client)
+			client := NewClientWithConfig(&_mcp.GetServiceContext().Config)
+			setHeader(_mcp.GetServiceContext().Config.DataSource.UserAgent, _mcp.GetServiceContext().Config.DataSource.Snowball.IndexURL, _mcp.GetServiceContext().Config.DataSource.Snowball.CookieURL, &_mcp.GetServiceContext().Config, client)
 
 			resp, err := client.R().SetResult(&suggest).Get(url)
 			_mcp.GetLogger().Infof("url: %s, body: %s", url, resp.String())

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"fi.mcp/internal/types"
-	"github.com/go-resty/resty/v2"
 	"github.com/zeromicro/go-zero/mcp"
 )
 
@@ -144,8 +143,8 @@ func NewBalanceTool(_mcp types.MCPProvider) mcp.Tool {
 			url := fmt.Sprintf(_mcp.GetServiceContext().Config.DataSource.Snowball.BalanceURL, req.Symbol, req.Count, time.Now().UnixMilli())
 			_mcp.GetLogger().Infof("url: %s", url)
 
-			client := resty.New()
-			setHeader(_mcp.GetServiceContext().Config.DataSource.UserAgent, _mcp.GetServiceContext().Config.DataSource.Snowball.IndexURL, _mcp.GetServiceContext().Config.DataSource.Snowball.CookieURL, client)
+			client := NewClientWithConfig(&_mcp.GetServiceContext().Config)
+			setHeader(_mcp.GetServiceContext().Config.DataSource.UserAgent, _mcp.GetServiceContext().Config.DataSource.Snowball.IndexURL, _mcp.GetServiceContext().Config.DataSource.Snowball.CookieURL, &_mcp.GetServiceContext().Config, client)
 			_, err := client.R().SetResult(&balance).Get(url)
 
 			if err != nil {

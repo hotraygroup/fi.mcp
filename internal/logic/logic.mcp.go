@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 
-	"fi.mcp/internal/logic/akshare"
 	"fi.mcp/internal/logic/okx"
 	"fi.mcp/internal/logic/snowball"
 	"fi.mcp/internal/svc"
@@ -55,15 +54,15 @@ func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
 	server.RegisterTool(okx.NewCandlesTool(_mcp))
 
 	// 注册 akshare tool
-	server.RegisterTool(akshare.NewStockZhAHistTool(_mcp))
-	server.RegisterTool(akshare.NewStockCyqEmTool(_mcp))
-	server.RegisterTool(akshare.NewStockIndividualFundFlowTool(_mcp))
-	server.RegisterTool(akshare.NewStockFundFlowIndividualTool(_mcp))
-	server.RegisterTool(akshare.NewStockFundFlowBigDealTool(_mcp))
+	// server.RegisterTool(akshare.NewStockZhAHistTool(_mcp))
+	// server.RegisterTool(akshare.NewStockCyqEmTool(_mcp))
+	// server.RegisterTool(akshare.NewStockIndividualFundFlowTool(_mcp))
+	// server.RegisterTool(akshare.NewStockFundFlowIndividualTool(_mcp))
+	// server.RegisterTool(akshare.NewStockFundFlowBigDealTool(_mcp))
 
-	server.RegisterTool(akshare.NewStockFinancialDebtThsTool(_mcp))
-	server.RegisterTool(akshare.NewStockFinancialBenefitThsTool(_mcp))
-	server.RegisterTool(akshare.NewStockFinancialCashThsTool(_mcp))
+	// server.RegisterTool(akshare.NewStockFinancialDebtThsTool(_mcp))
+	// server.RegisterTool(akshare.NewStockFinancialBenefitThsTool(_mcp))
+	// server.RegisterTool(akshare.NewStockFinancialCashThsTool(_mcp))
 
 	return _mcp
 }

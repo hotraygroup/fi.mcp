@@ -4,6 +4,10 @@ import "github.com/zeromicro/go-zero/mcp"
 
 type Config struct {
 	mcp.McpConf
+	Proxy struct {
+		Enable bool
+		Socks5 string
+	}
 	DataSource struct {
 		UserAgent string
 		Snowball  struct {
@@ -29,4 +33,14 @@ type Config struct {
 			Host string
 		}
 	}
+}
+
+// IsProxyEnabled 返回代理是否启用
+func (c *Config) IsProxyEnabled() bool {
+	return c.Proxy.Enable
+}
+
+// GetSocks5Addr 返回 SOCKS5 代理地址
+func (c *Config) GetSocks5Addr() string {
+	return c.Proxy.Socks5
 }
