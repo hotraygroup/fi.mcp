@@ -1,6 +1,6 @@
 module fi.mcp
 
-go 1.25.1
+go 1.26.2
 
 require (
 	github.com/go-resty/resty/v2 v2.16.5

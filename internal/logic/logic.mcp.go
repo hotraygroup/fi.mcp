@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 
-	"fi.mcp/internal/logic/okx"
 	"fi.mcp/internal/logic/snowball"
 	"fi.mcp/internal/svc"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -51,7 +50,7 @@ func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
 	server.RegisterTool(snowball.NewCashFlowTool(_mcp))
 
 	// 注册 okx tool
-	server.RegisterTool(okx.NewCandlesTool(_mcp))
+	// server.RegisterTool(okx.NewCandlesTool(_mcp))
 
 	// 注册 akshare tool
 	// server.RegisterTool(akshare.NewStockZhAHistTool(_mcp))
