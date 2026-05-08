@@ -42,27 +42,59 @@ func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
 	}
 
 	// 注册 snowball tool
-	server.RegisterTool(snowball.NewSuggestTool(_mcp))
-	server.RegisterTool(snowball.NewKlineTool(_mcp))
-	server.RegisterTool(snowball.NewIndicatorTool(_mcp))
-	server.RegisterTool(snowball.NewIncomeTool(_mcp))
-	server.RegisterTool(snowball.NewBalanceTool(_mcp))
-	server.RegisterTool(snowball.NewCashFlowTool(_mcp))
-	server.RegisterTool(snowball.NewQuoteTool(_mcp))
+	if tool, handler := snowball.NewSuggestTool(_mcp); tool != nil {
+		mcp.AddTool(server, tool, handler)
+	}
+	if tool, handler := snowball.NewKlineTool(_mcp); tool != nil {
+		mcp.AddTool(server, tool, handler)
+	}
+	if tool, handler := snowball.NewIndicatorTool(_mcp); tool != nil {
+		mcp.AddTool(server, tool, handler)
+	}
+	if tool, handler := snowball.NewIncomeTool(_mcp); tool != nil {
+		mcp.AddTool(server, tool, handler)
+	}
+	if tool, handler := snowball.NewBalanceTool(_mcp); tool != nil {
+		mcp.AddTool(server, tool, handler)
+	}
+	if tool, handler := snowball.NewCashFlowTool(_mcp); tool != nil {
+		mcp.AddTool(server, tool, handler)
+	}
+	if tool, handler := snowball.NewQuoteTool(_mcp); tool != nil {
+		mcp.AddTool(server, tool, handler)
+	}
 
 	// 注册 okx tool
-	// server.RegisterTool(okx.NewCandlesTool(_mcp))
+	// if tool, handler := okx.NewCandlesTool(_mcp); tool != nil {
+	// 	mcp.AddTool(server, tool, handler)
+	// }
 
 	// 注册 akshare tool
-	// server.RegisterTool(akshare.NewStockZhAHistTool(_mcp))
-	// server.RegisterTool(akshare.NewStockCyqEmTool(_mcp))
-	// server.RegisterTool(akshare.NewStockIndividualFundFlowTool(_mcp))
-	// server.RegisterTool(akshare.NewStockFundFlowIndividualTool(_mcp))
-	// server.RegisterTool(akshare.NewStockFundFlowBigDealTool(_mcp))
+	// if tool, handler := akshare.NewStockZhAHistTool(_mcp); tool != nil {
+	// 	mcp.AddTool(server, tool, handler)
+	// }
+	// if tool, handler := akshare.NewStockCyqEmTool(_mcp); tool != nil {
+	// 	mcp.AddTool(server, tool, handler)
+	// }
+	// if tool, handler := akshare.NewStockIndividualFundFlowTool(_mcp); tool != nil {
+	// 	mcp.AddTool(server, tool, handler)
+	// }
+	// if tool, handler := akshare.NewStockFundFlowIndividualTool(_mcp); tool != nil {
+	// 	mcp.AddTool(server, tool, handler)
+	// }
+	// if tool, handler := akshare.NewStockFundFlowBigDealTool(_mcp); tool != nil {
+	// 	mcp.AddTool(server, tool, handler)
+	// }
 
-	// server.RegisterTool(akshare.NewStockFinancialDebtThsTool(_mcp))
-	// server.RegisterTool(akshare.NewStockFinancialBenefitThsTool(_mcp))
-	// server.RegisterTool(akshare.NewStockFinancialCashThsTool(_mcp))
+	// if tool, handler := akshare.NewStockFinancialDebtThsTool(_mcp); tool != nil {
+	// 	mcp.AddTool(server, tool, handler)
+	// }
+	// if tool, handler := akshare.NewStockFinancialBenefitThsTool(_mcp); tool != nil {
+	// 	mcp.AddTool(server, tool, handler)
+	// }
+	// if tool, handler := akshare.NewStockFinancialCashThsTool(_mcp); tool != nil {
+	// 	mcp.AddTool(server, tool, handler)
+	// }
 
 	return _mcp
 }

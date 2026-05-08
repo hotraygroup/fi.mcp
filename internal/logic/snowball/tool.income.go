@@ -2,12 +2,19 @@ package snowball
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	"fi.mcp/internal/types"
 	"github.com/zeromicro/go-zero/mcp"
 )
+
+// IncomeArgs 定义 income 工具的输入参数
+type IncomeArgs struct {
+	Symbol string `json:"symbol" jsonschema:"股票代码"`
+	Count  string `json:"count,omitempty" jsonschema:"每次获取数量，默认值:6"`
+}
 
 var incomeDescription = map[string]string{
 	"report_date":                    "报告日期",
@@ -57,94 +64,83 @@ var incomeDescription = map[string]string{
 	"growth_rate":                    "增长率",
 }
 
-func NewIncomeTool(_mcp types.MCPProvider) mcp.Tool {
-
-	var tool = mcp.Tool{
+func NewIncomeTool(_mcp types.MCPProvider) (*mcp.Tool, func(context.Context, *mcp.CallToolRequest, IncomeArgs) (*mcp.CallToolResult, any, error)) {
+	tool := &mcp.Tool{
 		Name:        "income",
 		Description: "获取公司利润表",
-		InputSchema: mcp.InputSchema{
-			Properties: map[string]any{
-				"symbol": map[string]any{
-					"type":        "string",
-					"description": "股票代码",
-				},
-				"count": map[string]any{
-					"type":        "string",
-					"description": "每次获取数量",
-					"default":     "6",
-				},
-			},
-			Required: []string{"symbol"},
-		},
-		Handler: func(ctx context.Context, params map[string]any) (any, error) {
-			var req struct {
-				Symbol string `json:"symbol"`
-				Count  string `json:"count,omitempty"`
-			}
+	}
 
-			if err := mcp.ParseArguments(params, &req); err != nil {
-				return nil, fmt.Errorf("failed to parse params: %w", err)
-			}
+	handler := func(ctx context.Context, req *mcp.CallToolRequest, args IncomeArgs) (*mcp.CallToolResult, any, error) {
+		if args.Count == "" {
+			args.Count = "6"
+		}
 
-			if req.Count == "" {
-				req.Count = "6"
-			}
+		income := types.Income{}
+		var items []map[string]interface{}
 
-			income := types.Income{}
-			var items []map[string]interface{}
+		url := fmt.Sprintf(_mcp.GetServiceContext().Config.DataSource.Snowball.IncomeURL, args.Symbol, args.Count, time.Now().UnixMilli())
+		_mcp.GetLogger().Infof("url: %s", url)
 
-			url := fmt.Sprintf(_mcp.GetServiceContext().Config.DataSource.Snowball.IncomeURL, req.Symbol, req.Count, time.Now().UnixMilli())
-			_mcp.GetLogger().Infof("url: %s", url)
+		client := NewClientWithConfig(&_mcp.GetServiceContext().Config)
+		setHeader(_mcp.GetServiceContext().Config.DataSource.UserAgent, _mcp.GetServiceContext().Config.DataSource.Snowball.IndexURL, _mcp.GetServiceContext().Config.DataSource.Snowball.CookieURL, &_mcp.GetServiceContext().Config, client)
+		_, err := client.R().SetResult(&income).Get(url)
 
-			client := NewClientWithConfig(&_mcp.GetServiceContext().Config)
-			setHeader(_mcp.GetServiceContext().Config.DataSource.UserAgent, _mcp.GetServiceContext().Config.DataSource.Snowball.IndexURL, _mcp.GetServiceContext().Config.DataSource.Snowball.CookieURL, &_mcp.GetServiceContext().Config, client)
-			_, err := client.R().SetResult(&income).Get(url)
+		if err != nil {
+			return nil, nil, err
+		}
 
-			if err != nil {
-				return nil, err
-			}
-
-			for _, item := range income.Data.List {
-				new := make(map[string]interface{})
-				for k, v := range item {
-					if v == nil {
+		for _, item := range income.Data.List {
+			new := make(map[string]interface{})
+			for k, v := range item {
+				if v == nil {
+					continue
+				}
+				switch v := v.(type) {
+				case float64, string, int64:
+					new[k] = v
+				case []interface{}:
+					if len(v) == 0 || v[0] == nil {
 						continue
 					}
-					switch v := v.(type) {
-					case float64, string, int64:
-						new[k] = v
-					case []interface{}:
-						if len(v) == 0 || v[0] == nil {
+					if len(v) > 1 {
+						if v[0] == nil || v[1] == nil {
 							continue
 						}
-						if len(v) > 1 {
-							if v[0] == nil || v[1] == nil {
-								continue
-							}
-							new[k] = struct {
-								Amount     float64 `json:"amount"`
-								GrowthRate float64 `json:"growth_rate"`
-							}{
-								Amount:     v[0].(float64),
-								GrowthRate: v[1].(float64),
-							}
-						} else if len(v) == 1 {
-							new[k] = v[0]
+						new[k] = struct {
+							Amount     float64 `json:"amount"`
+							GrowthRate float64 `json:"growth_rate"`
+						}{
+							Amount:     v[0].(float64),
+							GrowthRate: v[1].(float64),
 						}
-					default:
-						_mcp.GetLogger().Infof("unknown type: %T, value: %v", v, v)
+					} else if len(v) == 1 {
+						new[k] = v[0]
 					}
+				default:
+					_mcp.GetLogger().Infof("unknown type: %T, value: %v", v, v)
 				}
-				items = append(items, new)
 			}
+			items = append(items, new)
+		}
 
-			_mcp.GetLogger().Infof("data item count: %d", len(income.Data.List))
-			return map[string]any{
-				"columns": incomeDescription,
-				"items":   items,
-			}, nil
+		_mcp.GetLogger().Infof("data item count: %d", len(income.Data.List))
 
-		},
+		result := map[string]any{
+			"columns": incomeDescription,
+			"items":   items,
+		}
+
+		jsonBytes, err := json.Marshal(result)
+		if err != nil {
+			return nil, nil, fmt.Errorf("failed to marshal result: %w", err)
+		}
+
+		return &mcp.CallToolResult{
+			Content: []mcp.Content{
+				&mcp.TextContent{Text: string(jsonBytes)},
+			},
+		}, nil, nil
 	}
-	return tool
+
+	return tool, handler
 }
