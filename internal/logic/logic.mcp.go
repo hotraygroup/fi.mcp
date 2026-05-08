@@ -48,6 +48,7 @@ func NewMCPLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MCP {
 	server.RegisterTool(snowball.NewIncomeTool(_mcp))
 	server.RegisterTool(snowball.NewBalanceTool(_mcp))
 	server.RegisterTool(snowball.NewCashFlowTool(_mcp))
+	server.RegisterTool(snowball.NewQuoteTool(_mcp))
 
 	// 注册 okx tool
 	// server.RegisterTool(okx.NewCandlesTool(_mcp))
